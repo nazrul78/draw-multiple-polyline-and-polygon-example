@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
         body: FlutterMap(
           options: MapOptions(
             onTap: (tapPosition, point) async {
-              if (isDrawPolylineEnable) {
+              if (isDrawPolylineEnable || isDrawPolygoneEnable) {
                 polylinePoints.add(point);
                 // latlngList1.add(point);
                 // log(polylinePoints.toString());
@@ -162,6 +162,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: (() {
                             if (polylinePoints.isNotEmpty) {
                               //polylines.add(tempPolylines.first);
+                              addPolygon(points: polylinePoints);
                             }
 
                             isDrawPolygoneEnable = !isDrawPolygoneEnable;
@@ -209,6 +210,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: (() {
                             tempPolylines = [];
                             polylines = [];
+                            polygins = [];
 
                             setState(() {});
                           }),
