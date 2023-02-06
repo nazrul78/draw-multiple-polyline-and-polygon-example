@@ -16,62 +16,43 @@ class _HomePageState extends State<HomePage> {
   List<LatLng> polylinePoints = [];
   bool isDrawPolylineEnable = false;
 
+  List<Polyline> tempPolylines = [];
   List<Polyline> polylines = [];
-  List<Polyline> polylines1 = [];
 
-  // List<Polyline> polylines1 = [
-  //   Polyline(
-  //     //points: polylinePoints,
-  //     points: [
-  //       LatLng(23, 90.750),
-  //       LatLng(24, 91.850),
-  //     ],
-  //     color: Colors.blue,
-  //     strokeWidth: 5,
-  //   ),
-  //   Polyline(
-  //     points: [
-  //       LatLng(23.72922, 88.270687),
-  //       LatLng(23.435092, 88.210665),
-  //       LatLng(23.167556, 88.621771),
-  //       LatLng(23.457602, 88.731606),
-  //     ],
-  //     color: Colors.blue,
-  //     strokeWidth: 5,
-  //   ),
-  // ];
+  bool isDrawPolygoneEnable = false;
 
-  List<LatLng> latlngList1 = [
-    // LatLng(24.002549, 90.297772),
-    // LatLng(23.960481, 90.51541),
-    // LatLng(23.802171, 90.555689),
-    // LatLng(23.810781, 90.379916),
-    // LatLng(23.600023, 90.344344),
-    // LatLng(23.601456, 90.565104)
-  ];
-
-  List<LatLng> latlngList2 = [
-    // LatLng(23, 91),
-    // LatLng(24, 92),
-  ];
+  List<Polygon> tempPolygins = [];
+  List<Polygon> polygins = [];
 
   void addPolyline({required List<LatLng> points}) {
     log(points.toString());
-    polylines = [];
-    polylines.add(
+    tempPolylines = [];
+    tempPolylines.add(
       Polyline(
         points: points,
-        // points: [
-        //   LatLng(23, 90),
-        //   LatLng(24, 90),
-        // ],
         color: Colors.blue,
         strokeWidth: 5,
       ),
     );
 
-    log(polylines.length.toString());
-    log('${polylines.first.points}');
+    log(tempPolylines.length.toString());
+    log('${tempPolylines.first.points}');
+  }
+
+  void addPolygon({required List<LatLng> points}) {
+    log(points.toString());
+    //tempPolylines = [];
+    polygins.add(
+      Polygon(
+        points: points,
+        //color: Colors.blue,
+        borderStrokeWidth: 5,
+        borderColor: Colors.blue,
+      ),
+    );
+
+    log(polygins.length.toString());
+    log('${polygins.first.points}');
   }
 
   @override
@@ -109,7 +90,6 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     // ============== Used to draw a polyline on map ===========
-
                     Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: JustTheTooltip(
@@ -130,8 +110,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: GestureDetector(
                           onTap: (() async {
-                            if (polylines.isNotEmpty) {
-                              polylines1.add(polylines.first);
+                            if (tempPolylines.isNotEmpty) {
+                              polylines.add(tempPolylines.first);
                             }
 
                             isDrawPolylineEnable = !isDrawPolylineEnable;
@@ -158,6 +138,55 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
 
+                    // ============== Used to draw a polygon on map ===========
+
+                    Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: JustTheTooltip(
+                        tailLength: 12.0,
+                        offset: 5,
+                        preferredDirection: AxisDirection.left,
+                        content: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Polygon',
+                            style: TextStyle(
+                              fontFamily: 'Manrope Regular',
+                              fontSize: 14.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        child: GestureDetector(
+                          onTap: (() {
+                            if (polylinePoints.isNotEmpty) {
+                              //polylines.add(tempPolylines.first);
+                            }
+
+                            isDrawPolygoneEnable = !isDrawPolygoneEnable;
+                            polylinePoints = [];
+                            log(polylinePoints.toString());
+                            setState(() {});
+                          }),
+                          child: Container(
+                              width: 32,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                color: isDrawPolygoneEnable
+                                    ? Colors.black
+                                    : Colors.grey,
+                              ),
+                              child: Icon(
+                                Icons.square_outlined,
+                                color: Colors.white,
+                              )),
+                        ),
+                      ),
+                    ),
+// ============== Used to clear all drawing object ===========
                     Padding(
                       padding: EdgeInsets.only(top: 20),
                       child: JustTheTooltip(
@@ -178,13 +207,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: GestureDetector(
                           onTap: (() {
+                            tempPolylines = [];
                             polylines = [];
-                            polylines1 = [];
 
                             setState(() {});
-
-                            log('${polylines.length}');
-                            log('${latlngList1.length}');
                           }),
                           child: Container(
                               width: 32,
@@ -219,33 +245,35 @@ class _HomePageState extends State<HomePage> {
             ),
             PolylineLayer(
               polylineCulling: false,
-              polylines: polylines,
+              polylines: tempPolylines,
             ),
             PolylineLayer(
               polylineCulling: false,
-              polylines: polylines1,
+              polylines: polylines,
             ),
+            //================ Polygon ==============
+            PolygonLayer(
+              polygonCulling: false,
+              polygons: polygins,
+            ),
+            // PolygonLayer(
+            //   polygonCulling: false,
+            //   polygons: [
+            //     Polygon(
+            //       points: [
+            //         LatLng(30, 50),
+            //         LatLng(40, 60),
+            //       ],
+            //       //color: Colors.blue,
+            //       borderStrokeWidth: 5,
+            //       borderColor: Colors.blue,
+            //     ),
+            //   ],
+            // ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // polylinePoints.clear();
-            // polylines.clear();
-            log(latlngList2.toString() + '??????????/');
-            addPolyline(points: latlngList1);
-
-            // addPolyline(points: latlngList2);
-
-            // polylines.addAll(polylines1);
-
-            //  log('${polylines.first.}');
-            log('${polylines.first.points}');
-            log('${polylines.first.borderColor}');
-            log('${polylines.first.strokeWidth}');
-            log('${polylines.length}');
-
-            setState(() {});
-          },
+          onPressed: () {},
           child: Icon(Icons.add),
         ));
   }
